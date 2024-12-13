@@ -15,8 +15,13 @@ namespace SkyRendererTest
         public MainForm()
         {
             InitializeComponent();
-           // ImageServiceTycho.DataFile = @"C:\Users\mauro\Desktop\Star Catalogs\stars.parquet";
+            pictureBox1.MouseWheel += PictureBox1_MouseWheel;
+            SetupMouseTracking();
         }
+
+        private System.Windows.Forms.Timer mouseTimer;
+        private System.Drawing.Point lastPosition;
+        private bool isMouseMoving = false;
 
         Image<Rgba32>? lastimage;
         CachedImage? H2FCache;
@@ -313,23 +318,98 @@ namespace SkyRendererTest
 
         private void pictureBox1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            // PictureBox Center
-            int centerX = pictureBox1.Width / 2;
-            int centerY = pictureBox1.Height / 2;
+            //// PictureBox Center
+            //int centerX = pictureBox1.Width / 2;
+            //int centerY = pictureBox1.Height / 2;
 
             // mouse coordinates
             int mouseX = e.X;
             int mouseY = e.Y;
 
-            var scaleDeg = numImageScale.Value / 3600.0m;
+            //var scaleDeg = numImageScale.Value / 3600.0m;
 
-            var dx = (centerX - mouseX) * scaleDeg;
-            var dy = (centerY - mouseY) * scaleDeg;
+            //var dx = (centerX - mouseX) * scaleDeg;
+            //var dy = (centerY - mouseY) * scaleDeg;
 
-            numRA.Value += dx;
-            numDEC.Value += dy;
+            //numRA.Value += dx;
+            //numDEC.Value += dy;
 
+            var cc = new CoordinateConverter((double)numRA.Value, (double)numDEC.Value, pictureBox1.Width, pictureBox1.Height, (double)numImageScale.Value, (double)numRotation.Value);
+            var newCoord = cc.ConvertXYToRaDec(mouseX, mouseY);
+
+            try
+            {
+                suspendRedraw = true;
+                numRA.Value = (decimal)newCoord.ra;
+                numDEC.Value = (decimal)newCoord.dec;
+            }
+            finally
+            {
+                suspendRedraw = false;
+            }
             Redraw();
         }
+
+        private void PictureBox1_MouseWheel(object? sender, MouseEventArgs e)
+        {
+            var delta = e.Delta;
+            var shift = (numImageScale.Value / 200) * delta;
+            var newValue = numImageScale.Value + shift;
+            newValue = Math.Max(newValue, numImageScale.Minimum);
+            newValue = Math.Min(newValue, numImageScale.Maximum);
+            numImageScale.Value = newValue;
+        }
+
+
+        private void SetupMouseTracking()
+        {
+            // Configurazione del timer
+            mouseTimer = new System.Windows.Forms.Timer();
+            mouseTimer.Interval = 500; // 500 millisecondi = mezzo secondo
+            mouseTimer.Tick += MouseTimer_Tick;
+
+            // Eventi della PictureBox
+            pictureBox1.MouseMove += PictureBox1_MouseMove;
+            pictureBox1.MouseLeave += PictureBox1_MouseLeave;
+        }
+
+        private void PictureBox1_MouseMove(object? sender, MouseEventArgs e)
+        {
+            if (lastPosition != e.Location)
+            {
+                isMouseMoving = true;
+                lastPosition = e.Location;
+                mouseTimer.Stop();
+                mouseTimer.Start();
+            }
+        }
+
+        private void PictureBox1_MouseLeave(object? sender, EventArgs e)
+        {
+            mouseTimer.Stop();
+            isMouseMoving = false;
+        }
+
+        private void MouseTimer_Tick(object? sender, EventArgs e)
+        {
+            if (isMouseMoving)
+            {
+                // Il mouse è stato fermo per mezzo secondo
+                isMouseMoving = false;
+                mouseTimer.Stop();
+
+                // Stampa le coordinate
+                UpdateMouseCoordinates();
+            }
+        }
+
+        private void UpdateMouseCoordinates()
+        {
+            var pos = pictureBox1.PointToClient(Cursor.Position);
+            var cc = new CoordinateConverter((double)numRA.Value, (double)numDEC.Value, pictureBox1.Width, pictureBox1.Height, (double)numImageScale.Value, (double)numRotation.Value);
+            var coord = cc.ConvertXYToRaDec(pos.X, pos.Y);
+            txtCurrentMousePosition.Text = $"{coord.ra:0.0000}, {coord.dec:0.0000}";
+        }
+
     }
 }

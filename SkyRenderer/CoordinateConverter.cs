@@ -124,5 +124,146 @@ namespace SkyRenderer
 
             return Math.Acos(Math.Max(-1.0, Math.Min(1.0, cosDist))) * RadiansToDegrees;
         }
+
+
+        /// <summary>
+        /// Converts image coordinates to celestial coordinates using inverse stereographic projection
+        /// </summary>
+        /// <param name="x">X coordinate in pixels</param>
+        /// <param name="y">Y coordinate in pixels</param>
+        /// <returns>A tuple containing (RA, Dec) in degrees. Returns (NaN, NaN) if the point is invalid</returns>
+        public (double ra, double dec) oldConvertXYToRaDec(double x, double y)
+        {
+            // Check if point is within image bounds
+            if (x < 0 || x >= width || y < 0 || y >= height)
+            {
+                return (Double.NaN, Double.NaN);
+            }
+
+            // Convert to projection plane coordinates (in arcseconds)
+            double xProj = -(x - width / 2.0) * scale;
+            double yProj = -(y - height / 2.0) * scale;
+
+            // Convert to radians
+            xProj /= ArcsecondsPerDegree;
+            yProj /= ArcsecondsPerDegree;
+            xProj *= DegreesToRadians;
+            yProj *= DegreesToRadians;
+
+            // Undo rotation
+            double rotRad = -rotationAngle * DegreesToRadians; // Note the negative to reverse
+            double cosRot = Math.Cos(rotRad);
+            double sinRot = Math.Sin(rotRad);
+            double x1 = xProj * cosRot - yProj * sinRot;
+            double y1 = xProj * sinRot + yProj * cosRot;
+
+            // Calculate auxiliary values
+            double rho = Math.Sqrt(x1 * x1 + y1 * y1);
+            double c = 2 * Math.Atan2(rho, 2.0);
+            double sinc = Math.Sin(c);
+            double cosc = Math.Cos(c);
+
+            // Convert center point to radians
+            double ra0 = raCenter * DegreesToRadians;
+            double dec0 = decCenter * DegreesToRadians;
+
+            // Calculate declination
+            double sinDec0 = Math.Sin(dec0);
+            double cosDec0 = Math.Cos(dec0);
+            double dec = Double.NaN;
+
+            if (rho != 0)
+            {
+                dec = Math.Asin(cosc * sinDec0 + (y1 * sinc * cosDec0) / rho);
+            }
+            else
+            {
+                dec = dec0;
+            }
+
+            // Calculate right ascension
+            double ra = ra0;
+            if (rho != 0)
+            {
+                double denom = rho * cosDec0 * cosc - y1 * sinDec0 * sinc;
+                if (Math.Abs(denom) > 1e-10)
+                {
+                    ra = ra0 + Math.Atan2(x1 * sinc, denom);
+                }
+            }
+
+            // Normalize RA to [0, 360)
+            ra = ((ra * RadiansToDegrees % 360) + 360) % 360;
+
+            return (ra, dec * RadiansToDegrees);
+        }
+
+
+        /// <summary>
+        /// Converts image coordinates to celestial coordinates using inverse stereographic projection
+        /// </summary>
+        /// <param name="x">X coordinate in pixels</param>
+        /// <param name="y">Y coordinate in pixels</param>
+        /// <returns>A tuple containing (RA, Dec) in degrees. Returns (NaN, NaN) if the point is invalid</returns>
+        public (double ra, double dec) ConvertXYToRaDec(double x, double y)
+        {
+            // Check if point is within image bounds
+            if (x < 0 || x >= width || y < 0 || y >= height)
+            {
+                return (Double.NaN, Double.NaN);
+            }
+
+            // Convert to projection plane coordinates (in arcseconds)
+            double xProj = -(x - width / 2.0) * scale;
+            double yProj = -(y - height / 2.0) * scale;
+
+            // Convert to radians
+            xProj /= ArcsecondsPerDegree;
+            yProj /= ArcsecondsPerDegree;
+            xProj *= DegreesToRadians;
+            yProj *= DegreesToRadians;
+
+            // Undo rotation
+            double rotRad = -rotationAngle * DegreesToRadians; // Note the negative to reverse
+            double cosRot = Math.Cos(rotRad);
+            double sinRot = Math.Sin(rotRad);
+            double x1 = xProj * cosRot - yProj * sinRot;
+            double y1 = xProj * sinRot + yProj * cosRot;
+
+            // Calculate auxiliary values
+            double rho = Math.Sqrt(x1 * x1 + y1 * y1);
+
+            // Handle center point
+            if (rho == 0)
+            {
+                return (raCenter, decCenter);
+            }
+
+            double c = 2 * Math.Atan2(rho, 2.0);
+            double sinc = Math.Sin(c);
+            double cosc = Math.Cos(c);
+
+            // Convert center point to radians
+            double ra0 = raCenter * DegreesToRadians;
+            double dec0 = decCenter * DegreesToRadians;
+
+            // Calculate declination
+            double sinDec0 = Math.Sin(dec0);
+            double cosDec0 = Math.Cos(dec0);
+            double dec = Math.Asin(cosc * sinDec0 + (y1 * sinc * cosDec0) / rho);
+
+            // Calculate right ascension
+            double denom = rho * cosDec0 * cosc - y1 * sinDec0 * sinc;
+            double ra = ra0;
+            if (Math.Abs(denom) > 1e-10)
+            {
+                ra = ra0 + Math.Atan2(x1 * sinc, denom);
+            }
+
+            // Normalize RA to [0, 360)
+            ra = ((ra * RadiansToDegrees % 360) + 360) % 360;
+
+            return (ra, dec * RadiansToDegrees);
+        }
     }
 }

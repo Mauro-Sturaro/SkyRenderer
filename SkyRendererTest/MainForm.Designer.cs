@@ -60,6 +60,7 @@ namespace SkyRendererTest
             btGotoOrion = new Button();
             btGotoPleiades = new Button();
             groupBox3 = new GroupBox();
+            txtCurrentMousePosition = new TextBox();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numRA).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numDEC).BeginInit();
@@ -366,11 +367,20 @@ namespace SkyRendererTest
             groupBox3.TabStop = false;
             groupBox3.Text = "Go To";
             // 
+            // txtCurrentMousePosition
+            // 
+            txtCurrentMousePosition.Location = new Point(10, 577);
+            txtCurrentMousePosition.Name = "txtCurrentMousePosition";
+            txtCurrentMousePosition.ReadOnly = true;
+            txtCurrentMousePosition.Size = new Size(178, 23);
+            txtCurrentMousePosition.TabIndex = 33;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(998, 600);
+            Controls.Add(txtCurrentMousePosition);
             Controls.Add(groupBox2);
             Controls.Add(groupBox1);
             Controls.Add(chkRedCross);
@@ -436,5 +446,6 @@ namespace SkyRendererTest
         private Button btGotoOrion;
         private Button btGotoPleiades;
         private GroupBox groupBox3;
+        private TextBox txtCurrentMousePosition;
     }
 }
