@@ -16,7 +16,9 @@ namespace SkyRendererTest
         {
             InitializeComponent();
             pictureBox1.MouseWheel += PictureBox1_MouseWheel;
+            mouseTimer = new System.Windows.Forms.Timer();
             SetupMouseTracking();
+
         }
 
         private System.Windows.Forms.Timer mouseTimer;
@@ -364,7 +366,6 @@ namespace SkyRendererTest
         private void SetupMouseTracking()
         {
             // Configurazione del timer
-            mouseTimer = new System.Windows.Forms.Timer();
             mouseTimer.Interval = 500; // 500 millisecondi = mezzo secondo
             mouseTimer.Tick += MouseTimer_Tick;
 
