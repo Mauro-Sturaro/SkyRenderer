@@ -41,12 +41,14 @@ namespace SkyRenderer
         /// <param name="maxRA">Maximum Right Ascension in degrees (0-360)</param>
         /// <param name="minDEC">Minimum Declination in degrees (-90 to +90)</param>
         /// <param name="maxDEC">Maximum Declination in degrees (-90 to +90)</param>
+        /// <param name="maxMagnitude">Discard dimmer stars</param>
         /// <returns>An async enumerable of StarRecords within the specified range</returns>
         public async IAsyncEnumerable<StarRecord> ReadFilteredData(
             double minRA,
             double maxRA,
             double minDEC,
-            double maxDEC)
+            double maxDEC,
+            double maxMagnitude)
         {
             if (disposed)
                 throw new ObjectDisposedException(nameof(TychoParquetReader));
@@ -65,7 +67,7 @@ namespace SkyRenderer
             {
                 await foreach (var record in ReadFromRowGroupAsync(
                     parquetReader, dataFields, currentRowGroup,
-                    minRA, maxRA, minDEC, maxDEC))
+                    minRA, maxRA, minDEC, maxDEC, maxMagnitude))
                 {
                     yield return record;
                 }
@@ -79,7 +81,8 @@ namespace SkyRenderer
             double minRA,
             double maxRA,
             double minDEC,
-            double maxDEC)
+            double maxDEC,
+            double maxMagnitude)
         {
 
             using ParquetRowGroupReader groupReader = parquetReader.OpenRowGroupReader(currentRowGroup);
@@ -115,14 +118,20 @@ namespace SkyRenderer
 
             for (int i = 0; i < raCol.NumValues; i++)
             {
-               
-                double ra = raData[i].Value;
-                double de = deData[i].Value;
+               var raDataChecked = raData[i];
+                var deDataChecked = deData[i];
+                if (!raDataChecked.HasValue || !deDataChecked.HasValue)
+                    continue;
 
-                if (Inside(ra, minRA, maxRA) && Inside(de, minDEC, maxDEC))
+                double ra = raDataChecked.Value;
+                double de = deDataChecked.Value;
+
+                // Use VT magnitude if available, otherwise BT magnitude, or 999.0 as fallback
+                var mag = vtData[i] ?? btData[i] ?? 999.0;
+
+                if (mag<=maxMagnitude && Inside(ra, minRA, maxRA) && Inside(de, minDEC, maxDEC))
                 {
-                    // Use VT magnitude if available, otherwise BT magnitude, or 999.0 as fallback
-                    var mag = vtData[i] ?? btData[i] ?? 999.0;
+
                     // Calculate B-V color index if both magnitudes are available
                     double bv = btData[i].HasValue && vtData[i].HasValue
                         ? btData[i]!.Value - vtData[i]!.Value

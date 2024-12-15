@@ -83,18 +83,12 @@ namespace SkyRenderer
             Debug.WriteLine($"Coordinate range RA:[{minRA}; {maxRA}](cross={crossesRA360}), DEC:[{minDEC}; {maxDEC}]");
 
             int totalStars = 0;
-            int validStars = 0;
-            await foreach (var record in fileReader.ReadFilteredData(minRA, maxRA, minDEC, maxDEC))
+            await foreach (var record in fileReader.ReadFilteredData(minRA, maxRA, minDEC, maxDEC, maxMagnitude))
             {
                 totalStars++;
-
-                if (record.Vmag <= maxMagnitude)
-                {
-                    validStars++;
-                    pic.AddStar(record.RAdeg, record.DEdeg, record.Vmag, record.BV);
-                }
+                pic.AddStar(record.RAdeg, record.DEdeg, record.Vmag, record.BV);
             }
-            Debug.WriteLine($"Star retrieval complete. Found {totalStars} stars, {validStars} inside magnitude limit.");
+            Debug.WriteLine($"Star retrieval complete. Found {totalStars}.");
         }
 
         /// <summary>
