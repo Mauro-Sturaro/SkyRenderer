@@ -2,22 +2,40 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>disable</ImplicitUsings>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>SkyRenderer: a star field simulator</Title>
+    <Authors>Mauro Sturaro (lazyphoton)</Authors>
+    <PackageProjectUrl>https://github.com/Mauro-Sturaro/SkyRenderer</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <AssemblyVersion></AssemblyVersion>
+    <Description>.NET library to generate realistic star field images for astrophotography simulations.</Description>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="stars.parquet" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="stars.parquet">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\readme.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Parquet.Net" Version="5.0.2" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
     <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.4" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="stars.parquet">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>

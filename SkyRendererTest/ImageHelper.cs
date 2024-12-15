@@ -4,9 +4,8 @@ using SixLabors.ImageSharp.Formats.Bmp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using System.IO;
 
-namespace SkyRenderer
+namespace SkyRendererTest
 {
     /// <summary>
     /// Provides utility methods for image manipulation and conversion
@@ -21,13 +20,13 @@ namespace SkyRenderer
         {
             image.Mutate(x => x
                 // Horizontal line
-                .DrawLine(Color.Red, 1f,
-                    new PointF(0, image.Height / 2),
-                    new PointF(image.Width, image.Height / 2))
+                .DrawLine(SixLabors.ImageSharp.Color.Red, 1f,
+                    new SixLabors.ImageSharp.PointF(0, image.Height / 2),
+                    new SixLabors.ImageSharp.PointF(image.Width, image.Height / 2))
                 // Vertical line
-                .DrawLine(Color.Red, 1f,
-                    new PointF(image.Width / 2, 0),
-                    new PointF(image.Width / 2, image.Height))
+                .DrawLine(SixLabors.ImageSharp.Color.Red, 1f,
+                    new SixLabors.ImageSharp.PointF(image.Width / 2, 0),
+                    new SixLabors.ImageSharp.PointF(image.Width / 2, image.Height))
                 );
         }
 
