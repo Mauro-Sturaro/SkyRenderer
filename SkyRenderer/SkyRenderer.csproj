@@ -15,20 +15,20 @@
     <Description>.NET library to generate realistic star field images for astrophotography simulations.</Description>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="stars.parquet" />
-  </ItemGroup>
+
 
   <ItemGroup>
     <Content Include="stars.parquet">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+        <PackagePath>contentFiles\any\any</PackagePath>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <PackageCopyToOutput>true</PackageCopyToOutput>    </Content>
   </ItemGroup>
 
+  
+
   <ItemGroup>
-    <None Include="..\readme.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
+    <None Update="stars.parquet">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
