@@ -95,9 +95,9 @@ namespace SkyRenderer
         /// Adds random noise to the image
         /// </summary>
         /// <param name="image">The image to add noise to</param>
-        /// <param name="noisePercentage">Noise intensity as a percentage (default 1.5%)</param>
+        /// <param name="noisePercentage">Noise intensity as a percentage (default 1.0%)</param>
         /// <param name="seed">Optional seed for reproducible noise</param>
-        private static void AddNoise(Image<Rgba32> image, double noisePercentage = 1.5, int? seed = null)
+        private static void AddNoise(Image<Rgba32> image, double noisePercentage = 1.0, int? seed = null)
         {
             Random random = seed.HasValue ? new Random(seed.Value) : new Random();
 
