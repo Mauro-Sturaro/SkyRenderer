@@ -21,6 +21,7 @@ namespace SkyRendererTest
 
         }
 
+
         private System.Windows.Forms.Timer mouseTimer;
         private System.Drawing.Point lastPosition;
         private bool isMouseMoving = false;
@@ -140,10 +141,7 @@ namespace SkyRendererTest
             inside_ra = true;
             try
             {
-                if (numRA.Value == 360)
-                    numRA.Value = 0;
-                else if (numRA.Value == 0)
-                    numRA.Value = 360;
+                numRA.Value = NormalizeAngle(numRA.Value, 0, 360);
             }
             finally
             {
@@ -152,8 +150,9 @@ namespace SkyRendererTest
             Redraw();
         }
 
+
         private void numDEC_ValueChanged(object sender, EventArgs e)
-        {
+        {           
             Redraw();
         }
 
@@ -263,16 +262,14 @@ namespace SkyRendererTest
 
         private void numRotation_ValueChanged(object sender, EventArgs e)
         {
+
             if (inside_rotation)
                 return;
 
             inside_rotation = true;
             try
             {
-                if (numRotation.Value == 360)
-                    numRotation.Value = 0;
-                else if (numRotation.Value == 0)
-                    numRotation.Value = 360;
+                numRotation.Value = NormalizeAngle(numRotation.Value, 0, 360);
             }
             finally
             {
@@ -280,6 +277,24 @@ namespace SkyRendererTest
             }
             Redraw();
         }
+
+        public static decimal NormalizeAngle(decimal value, decimal min, decimal max)
+        {
+            if (max <= min)
+                throw new ArgumentException("Il valore di max deve essere maggiore di min.");
+
+            decimal range = max - min;
+            // Calcoliamo il resto della divisione (che in C# funziona anche con i decimal)
+            decimal result = (value - min) % range;
+
+            // Se il risultato è negativo, lo aggiungiamo al range per ottenere il corrispettivo positivo
+            if (result < 0)
+                result += range;
+
+            return result + min;
+        }
+
+
 
         private void chkRedCross_CheckedChanged(object sender, EventArgs e)
         {

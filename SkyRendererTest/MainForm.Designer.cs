@@ -173,7 +173,8 @@ namespace SkyRendererTest
             // 
             numRA.DecimalPlaces = 4;
             numRA.Location = new Point(93, 12);
-            numRA.Maximum = new decimal(new int[] { 360, 0, 0, 0 });
+            numRA.Maximum = new decimal(new int[] { 370, 0, 0, 0 });
+            numRA.Minimum = new decimal(new int[] { 10, 0, 0, int.MinValue });
             numRA.Name = "numRA";
             numRA.Size = new Size(85, 23);
             numRA.TabIndex = 0;
@@ -230,7 +231,8 @@ namespace SkyRendererTest
             // 
             numRotation.DecimalPlaces = 2;
             numRotation.Location = new Point(93, 70);
-            numRotation.Maximum = new decimal(new int[] { 360, 0, 0, 0 });
+            numRotation.Maximum = new decimal(new int[] { 380, 0, 0, 0 });
+            numRotation.Minimum = new decimal(new int[] { 20, 0, 0, int.MinValue });
             numRotation.Name = "numRotation";
             numRotation.Size = new Size(85, 23);
             numRotation.TabIndex = 25;

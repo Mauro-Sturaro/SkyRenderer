@@ -31,9 +31,9 @@ For usage see project website
 
 ### Dependencies
 
-- `Parquet.Net` (5.0.2)
-- `SixLabors.ImageSharp` (3.1.5)
-- `SixLabors.ImageSharp.Drawing` (2.1.4)
+- `Parquet.Net` (5.1.1)
+- `SixLabors.ImageSharp` (3.1.7)
+- `SixLabors.ImageSharp.Drawing` (2.1.5)
 
 ---
 
